@@ -3,6 +3,19 @@
 import * as React from "react"
 import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes"
 
+if (typeof window !== "undefined" && process.env.NODE_ENV === "development") {
+  const origConsoleError = console.error
+  console.error = (...args: unknown[]) => {
+    if (
+      typeof args[0] === "string" &&
+      args[0].includes("Encountered a script tag while rendering React component")
+    ) {
+      return
+    }
+    origConsoleError.apply(console, args)
+  }
+}
+
 function ThemeProvider({
   children,
   ...props
@@ -47,7 +60,7 @@ function ThemeHotkey() {
         return
       }
 
-      if (event.key.toLowerCase() !== "d") {
+      if (!event.key || event.key.toLowerCase() !== "d") {
         return
       }
 
